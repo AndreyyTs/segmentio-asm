@@ -46,7 +46,6 @@ func genExamples(current string, ranges []byteRange) []string {
 }
 
 func TestValid(t *testing.T) {
-
 	var examples = []string{
 		// Tests copied from the stdlib
 		"",
@@ -57,85 +56,87 @@ func TestValid(t *testing.T) {
 		"брэд-ЛГТМ",
 		"☺☻☹",
 
-		// // overlong
-		// "\xE0\x80",
-		// // unfinished continuation
-		// "aa\xE2",
+		// overlong
+		"\xE0\x80",
+		// unfinished continuation
+		"aa\xE2",
 
-		// string([]byte{66, 250}),
+		string([]byte{66, 250}),
 
-		// string([]byte{66, 250, 67}),
+		string([]byte{66, 250, 67}),
 
-		// "a\uFFFDb",
+		"a\uFFFDb",
 
-		// "\xF4\x8F\xBF\xBF", // U+10FFFF
+		"\xF4\x8F\xBF\xBF", // U+10FFFF
 
-		// "\xF4\x90\x80\x80", // U+10FFFF+1; out of range
-		// "\xF7\xBF\xBF\xBF", // 0x1FFFFF; out of range
+		"\xF4\x90\x80\x80", // U+10FFFF+1; out of range
+		"\xF7\xBF\xBF\xBF", // 0x1FFFFF; out of range
 
-		// "\xFB\xBF\xBF\xBF\xBF", // 0x3FFFFFF; out of range
+		"\xFB\xBF\xBF\xBF\xBF", // 0x3FFFFFF; out of range
 
-		// "\xc0\x80",     // U+0000 encoded in two bytes: incorrect
-		// "\xed\xa0\x80", // U+D800 high surrogate (sic)
-		// "\xed\xbf\xbf", // U+DFFF low surrogate (sic)
+		"\xc0\x80",     // U+0000 encoded in two bytes: incorrect
+		"\xed\xa0\x80", // U+D800 high surrogate (sic)
+		"\xed\xbf\xbf", // U+DFFF low surrogate (sic)
 
-		// // valid at boundary
-		// strings.Repeat("a", 32+28) + "☺☻☹",
-		// strings.Repeat("a", 32+29) + "☺☻☹",
-		// strings.Repeat("a", 32+30) + "☺☻☹",
-		// strings.Repeat("a", 32+31) + "☺☻☹",
-		// // invalid at boundary
-		// strings.Repeat("a", 32+31) + "\xE2a",
+		// valid at boundary
+		strings.Repeat("a", 32+28) + "☺☻☹",
+		strings.Repeat("a", 32+29) + "☺☻☹",
+		strings.Repeat("a", 32+30) + "☺☻☹",
+		strings.Repeat("a", 32+31) + "☺☻☹",
+		// invalid at boundary
+		strings.Repeat("a", 32+31) + "\xE2a",
 
-		// // same inputs as benchmarks
-		// "0123456789",
-		// "日本語日本語日本語日",
-		// "\xF4\x8F\xBF\xBF",
+		// same inputs as benchmarks
+		"0123456789",
+		"日本語日本語日本語日",
+		"\xF4\x8F\xBF\xBF",
 
-		// // bugs found with fuzzing
-		// "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\xc60",
-		// "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\xc300",
-		// "߀0000000000000000000000000000訨",
-		// "0000000000000000000000000000000˂00000000000000000000000000000000",
+		// bugs found with fuzzing
+		"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\xc60",
+		"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\xc300",
+		"߀0000000000000000000000000000訨",
+		"0000000000000000000000000000000˂00000000000000000000000000000000",
 	}
 
-	// any := byteRange{0, 0xFF}
-	// ascii := byteRange{0, 0x7F}
-	// cont := byteRange{0x80, 0xBF}
+	any := byteRange{0, 0xFF}
+	ascii := byteRange{0, 0x7F}
+	cont := byteRange{0x80, 0xBF}
 
 	rangesToTest := [][]byteRange{
-		// {one(0x20), ascii, ascii, ascii},
+		{one(0x20), ascii, ascii, ascii},
 
-		// // 2-byte sequences
-		// {one(0xC2)},
-		// {one(0xC2), ascii},
-		// {one(0xC2), cont},
-		// {one(0xC2), {0xC0, 0xFF}},
-		// {one(0xC2), cont, cont},
-		// {one(0xC2), cont, cont, cont},
+		{one(0x04), ascii, ascii, ascii},
 
-		// // 3-byte sequences
-		// {one(0xE1)},
-		// {one(0xE1), cont},
-		// {one(0xE1), cont, cont},
-		// {one(0xE1), cont, cont, ascii},
-		// {one(0xE1), cont, ascii},
-		// {one(0xE1), cont, cont, cont},
+		// 2-byte sequences
+		{one(0xC2)},
+		{one(0xC2), ascii},
+		{one(0xC2), cont},
+		{one(0xC2), {0xC0, 0xFF}},
+		{one(0xC2), cont, cont},
+		{one(0xC2), cont, cont, cont},
 
-		// // 4-byte sequences
-		// {one(0xF1)},
-		// {one(0xF1), cont},
-		// {one(0xF1), cont, cont},
-		// {one(0xF1), cont, cont, cont},
-		// {one(0xF1), cont, cont, ascii},
-		// {one(0xF1), cont, cont, cont, ascii},
+		// 3-byte sequences
+		{one(0xE1)},
+		{one(0xE1), cont},
+		{one(0xE1), cont, cont},
+		{one(0xE1), cont, cont, ascii},
+		{one(0xE1), cont, ascii},
+		{one(0xE1), cont, cont, cont},
 
-		// // overlong
-		// {{0xC0, 0xC1}, any},
-		// {{0xC0, 0xC1}, any, any},
-		// {{0xC0, 0xC1}, any, any, any},
-		// {one(0xE0), {0x0, 0x9F}, cont},
-		// {one(0xE0), {0xA0, 0xBF}, cont},
+		// 4-byte sequences
+		{one(0xF1)},
+		{one(0xF1), cont},
+		{one(0xF1), cont, cont},
+		{one(0xF1), cont, cont, cont},
+		{one(0xF1), cont, cont, ascii},
+		{one(0xF1), cont, cont, cont, ascii},
+
+		// overlong
+		{{0xC0, 0xC1}, any},
+		{{0xC0, 0xC1}, any, any},
+		{{0xC0, 0xC1}, any, any, any},
+		{one(0xE0), {0x0, 0x9F}, cont},
+		{one(0xE0), {0xA0, 0xBF}, cont},
 	}
 
 	for _, r := range rangesToTest {
@@ -165,7 +166,7 @@ func TestValid(t *testing.T) {
 
 		t.Run("boundary-"+tt, func(t *testing.T) {
 			size := 32 - len(tt)
-			prefix := strings.Repeat("q", size)
+			prefix := strings.Repeat("a", size)
 			b := []byte(prefix + tt)
 			check(t, b)
 		})
@@ -195,7 +196,6 @@ func TestValid(t *testing.T) {
 }
 
 func TestValidPageBoundary(t *testing.T) {
-
 	buf, err := buffer.New(64)
 	if err != nil {
 		t.Fatal(err)
@@ -233,8 +233,7 @@ func check(t *testing.T, b []byte) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("qwe\tValid(b)", Valid(b))
-		fmt.Println("qwe\tutf8.Valid(b)", utf8.Valid(b))
+
 		t.Errorf("Valid(%q) = %v; want %v", string(b), !expected, expected)
 	}
 
@@ -246,9 +245,7 @@ func check(t *testing.T, b []byte) {
 
 	expected = ascii.Valid(b)
 	if v.IsASCII() != expected {
-		// t.Errorf("qwe\tValid(b) %q", ascii.Valid(b))
-		t.Errorf("qwe\tascii.Valid(b) %v", ascii.Valid(b))
-		t.Errorf("qwe\tascii.Valid(b) %v", Valid(b))
+		t.Errorf("STRING(%q): %v", b, string(b))
 		t.Errorf("Validate(%q) ascii valid: %v; want %v", string(b), !expected, expected)
 	}
 }
@@ -259,7 +256,7 @@ var someutf8 = []byte("\xF4\x8F\xBF\xBF")
 
 func BenchmarkValid(b *testing.B) {
 	impls := map[string]func([]byte) bool{
-		"SIMD":   Valid,
+		"AVX":    Valid,
 		"Stdlib": utf8.Valid,
 	}
 

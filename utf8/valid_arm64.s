@@ -76,6 +76,20 @@ aligned_loop:
     B small_no_const
 
 small:
+    CBZ     R11, valid_ascii
+
+tail_loop:
+    MOVBU   (R10), R2        
+    AND     $0x80, R2        
+    CBNZ    R2, check_utf8        
+    ADD     $1, R10          
+    SUB     $1, R11          
+    CBNZ    R11, tail_loop        
+    B       valid_ascii          
+
+
+check_utf8:
+
     VMOVQ   $0x0202020202020202, $0x4915012180808080, V11
     VMOVQ   $0xcbcbcb8b8383a3e7, $0xcbcbdbcbcbcbcbcb, V13
     VMOVQ   $0x0101010101010101, $0x01010101babaaee6, V15
@@ -95,7 +109,7 @@ small_no_const:
     ADD R11, R10, R10
     VLD1.P  16(R10), [V4.B16]
 
-    ADR	shift_table, R2
+    ADR  shift_table, R2
     MOVW R11, R3
     LSL $2,  R3
     ADD R3, R2
@@ -206,21 +220,11 @@ no_valid:
     MOVD    R0, ret+24(FP)
     RET
 
-
-end_7:
-    MOVD    $7, R0
-    MOVD    R0, ret+24(FP)
-    RET
-
-end_R11:
-    MOVD    R11, R0
+valid_ascii:
+    MOVD    $3, R0
     MOVD    R0, ret+24(FP)
     RET
 
 
-ret7:
-    MOVD    $7, R0
-    MOVD    R0, ret+24(FP)            // Возвращаем 0 (строка не валидна)
-    RET
 ///////////////////////////
 
