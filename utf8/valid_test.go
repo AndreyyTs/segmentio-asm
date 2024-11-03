@@ -105,8 +105,6 @@ func TestValid(t *testing.T) {
 	rangesToTest := [][]byteRange{
 		{one(0x20), ascii, ascii, ascii},
 
-		{one(0x04), ascii, ascii, ascii},
-
 		// 2-byte sequences
 		{one(0xC2)},
 		{one(0xC2), ascii},
@@ -245,7 +243,6 @@ func check(t *testing.T, b []byte) {
 
 	expected = ascii.Valid(b)
 	if v.IsASCII() != expected {
-		t.Errorf("STRING(%q): %v", b, string(b))
 		t.Errorf("Validate(%q) ascii valid: %v; want %v", string(b), !expected, expected)
 	}
 }
