@@ -1,6 +1,7 @@
 package slices
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 )
@@ -15,6 +16,9 @@ func TestSumUint8(t *testing.T) {
 	sumUint8Generic(genericXCopy, y)
 	for i := 0; i < len(x); i++ {
 		if x[i] != genericXCopy[i] {
+			fmt.Println(x[:32], y[:32])
+			// break
+			fmt.Println(len(x), len(y))
 			t.Fatalf("mismatch sums at index %d, expected %d : got %d", i, genericXCopy[i], x[i])
 		}
 	}
