@@ -1,10 +1,12 @@
+//go:build ignore
 // +build ignore
-//
+
 // This code is a go assembly implementation of:
 //
 // Muła, Wojciech, & Lemire, Daniel (Thu, 14 Jun 2018).
-//   Faster Base64 Encoding and Decoding Using AVX2 Instructions.
-//   [arXiv:1704.00605](https://arxiv.org/abs/1704.00605)
+//
+//	Faster Base64 Encoding and Decoding Using AVX2 Instructions.
+//	[arXiv:1704.00605](https://arxiv.org/abs/1704.00605)
 //
 // ...with changes to support multiple encodings.
 package main
