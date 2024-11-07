@@ -1,4 +1,4 @@
-// TODO: license
+// SPDX-License-Identifier: MIT-0
 
 //go:build !purego
 
